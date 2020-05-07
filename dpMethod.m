@@ -10,8 +10,8 @@ minBound1 = vehInfoRoad1(:, 4); % 1车道车辆最早到达时刻
 maxBound1 = vehInfoRoad1(:, 5); % 1车道车辆最晚到达时刻
 minBound2 = vehInfoRoad2(:, 4); % 2车道车辆最早到达时刻
 maxBound2 = vehInfoRoad2(:, 5); % 2车道车辆最晚到达时刻
-vehNumOnRoad1 = length( vehInfoRoad1 );
-vehNumOnRoad2 = length( vehInfoRoad2 );
+vehNumOnRoad1 = length( vehInfoRoad1(:,1) );
+vehNumOnRoad2 = length( vehInfoRoad2(:,1) );
 %% init dp table
 
 dp1 = zeros(vehNumOnRoad1 + 1, vehNumOnRoad2 + 1);
