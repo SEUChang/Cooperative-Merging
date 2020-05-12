@@ -1,7 +1,5 @@
 %%
-%生成满足泊松分布的出现时间的车辆输出状态
-%泊松过程参考了https://blog.csdn.net/COCO56/article/details/99714313
-% https://wenku.baidu.com/view/f0bb272fb4daa58da0114a9d.html
+%生成满足均匀分布的出现时间的车辆输出状态
 %===========================参数说明===========================%
 % initiState:
 % N*6矩阵，第一列为出现时刻，第二列为所属道路,第三列为初始速度，第四列最早合流时刻，第五列最晚合流时刻,第六列，车辆ID号，
@@ -11,12 +9,18 @@
 % dis ：控制区域长度
 % Vmin , Vmax 所允许的最大最小速度（mps）
 %%
-function [initState, size1, size2] = creatInitState(lambda,Tmax, dis ,vmin, vmax, amin, amax)
+function [initState, size1, size2] = creatInitState_v2(Tmax, dis ,vmin, vmax, amin, amax)
+    
+    Thmin = 1.0;
+    Thmax = 2.0;
+    road1Vel = 20;
+    road2Vel = 15;
+    
     %=====生成第一组，主路上车辆出现时刻====%
     i = 1;
-    initState1(1,1) =  exprnd(1/lambda);
+    initState1(1,1) =  Thmin + ( Thmax - Thmin )* rand;
     while(initState1(i,1)< Tmax)
-        initState1(i + 1,1) = initState1(i,1) +  exprnd(1/lambda);%计算下一辆车的出现时刻
+        initState1(i + 1,1) = initState1(i,1) +   Thmin + ( Thmax - Thmin )* rand;%计算下一辆车的出现时刻
         i = i +1;
     end
     initState1(:,2) = 1;%第一列表示出现时间，第二列为所属道路
@@ -24,9 +28,9 @@ function [initState, size1, size2] = creatInitState(lambda,Tmax, dis ,vmin, vmax
     size1 = length(initState1(:,1));%road1上行驶的车数量
     %=====生成第二组，辅路上车辆出现时刻====%
     i = 1;
-    initState2(1,1) =  exprnd(1/lambda);
+    initState2(1,1) =   Thmin + ( Thmax - Thmin )* rand;
     while(initState2(i,1)< Tmax)
-        initState2(i + 1,1) = initState2(i,1) +  exprnd(1/lambda);
+        initState2(i + 1,1) = initState2(i,1) +   Thmin + ( Thmax - Thmin )* rand;
         i = i +1;
     end
     initState2(:,2) = 2;
@@ -37,8 +41,12 @@ function [initState, size1, size2] = creatInitState(lambda,Tmax, dis ,vmin, vmax
 %         initState2(initState2(:,1) < Tmax, :)] ;%剔除出现时间晚于Tmax的车
     initState = [initState1;initState2];
     size_ = size1 + size2;
-    initState(:,3) = vmin + (vmax - vmin) * rand(size_,1);%生成随机速度
-    initState = sortrows(initState);%根据出现时刻排序
+    %生成随机速度
+%     initState(:,3) = vmin + (vmax - vmin) * rand(size_,1);
+    initState(initState( :, 2 ) == 1 ,3) = road1Vel;
+    initState( initState( :, 2 ) == 2 ,3 ) = road2Vel;
+    %根据出现时刻排序
+    initState = sortrows(initState);
     
 %%  加入tmin tmax 边界值 ID号
 for i = 1: 1: size_

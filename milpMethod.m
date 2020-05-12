@@ -2,8 +2,8 @@
 function [MILPAssignTime,MILPrunTime] = milpMethod(initState,dt1,dt2)
 vehInfoRoad1 = initState( initState( : , 2 ) == 1, : );
 vehInfoRoad2 = initState( initState( : , 2 ) == 2, : );
-M = length( vehInfoRoad1 );
-N = length( vehInfoRoad2 );
+[M, ~] = size( vehInfoRoad1 );
+[N, ~] = size( vehInfoRoad2 );
 decisionVarNum = M + N + M * N + 1;
 %Ä¿±êº¯Êý
 f = zeros(decisionVarNum, 1);
